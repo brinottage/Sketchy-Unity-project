@@ -19,7 +19,7 @@ public class pasarNivel : MonoBehaviour
             audioSource.clip = audioSound;
             audioSource.Play();
 
-            Debug.Log("Pasando nivel ...");
+            Debug.Log("Passing Level ...");
             int numeroNivel = SceneManager.GetActiveScene().buildIndex + 1;
 
             col.gameObject.GetComponent<CharacterController2D>().blockPlayer();
@@ -29,13 +29,15 @@ public class pasarNivel : MonoBehaviour
             yield return new WaitForSeconds(1.0f);
             GameObject.Find("levelCompletedLabel2").GetComponent<Text>().enabled = false;
 
-            if (numeroNivel > 2) {
+            if (numeroNivel > 3) {
+                
                 GameObject.Find("levelCompletedLabel2").GetComponent<Text>().text = "Congrats!!! You've finished the game ... Jam ;-)";
                 GameObject.Find("levelCompletedLabel2").GetComponent<Text>().enabled = true;
                 yield return new WaitForSeconds(10.0f);
                 numeroNivel = 0;
             }
 
+            Debug.Log(numeroNivel);
             SceneManager.LoadSceneAsync(numeroNivel);
         }
     }

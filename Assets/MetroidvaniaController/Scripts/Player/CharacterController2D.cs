@@ -21,6 +21,9 @@ public class CharacterController2D : MonoBehaviour
 	private float limitFallSpeed = 25f; // Limit fall speed
 
 	public bool canDoubleJump = true; //If player can double jump
+
+	public bool canTripleJump = false; //If the player can triple jump
+
 	[SerializeField] private float m_DashForce = 25f;
 	private bool canDash = true;
 	private bool isDashing = false; //If player is dashing
@@ -44,10 +47,10 @@ public class CharacterController2D : MonoBehaviour
 	private float jumpWallDistX = 0; //Distance between player and wall
 	private bool limitVelOnWallJump = false; //For limit wall jump distance with low fps
 
-	public float corazonesMaximo = 5.0f;
-	public Image[] corazones;
-	public Sprite corazonLleno;
-	public Sprite corazonVacio;
+	public float maxHearts = 5.0f;
+	public Image[] hearts;
+	public Sprite heartsFull;
+	public Sprite heartsEmpty;
 
 	[Header("Events")]
 	[Space]
@@ -80,8 +83,13 @@ public class CharacterController2D : MonoBehaviour
 
 	private void FixedUpdate()
 	{
+
+		//Debug.Log(SceneManager.GetActiveScene().buildIndex + 1);
+
 		bool wasGrounded = m_Grounded;
 		m_Grounded = false;
+
+		//Debug.Log(life);
 
 		// The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
 		// This can be done using layers instead but Sample Assets will not overwrite your project settings.
@@ -144,23 +152,33 @@ public class CharacterController2D : MonoBehaviour
 			}
 		}
 
-		if (life > corazonesMaximo) {
-			life = corazonesMaximo;
+		if (life > maxHearts) {
+			life = maxHearts;
 		}
 
-		for (int i=0; i<corazones.Length; i++) {
+		for (int i=0; i<hearts.Length; i++) {
 			if (i<life) {
-				corazones[i].sprite = corazonLleno;
+				hearts[i].sprite = heartsFull;
 			} else {
-				corazones[i].sprite = corazonVacio;
+				hearts[i].sprite = heartsEmpty;
 			}
 
-			if (i<corazonesMaximo) {
-				corazones[i].enabled = true;
+			if (i<maxHearts) {
+				hearts[i].enabled = true;
 			} else {
-				corazones[i].enabled = false;
+				hearts[i].enabled = false;
 			}
 		}
+
+
+		// Triple Jump Timer
+		if (canTripleJump) {
+
+			StartCoroutine(TripleJumpCooldown());
+
+		}
+
+
 	}
 
 
@@ -219,6 +237,16 @@ public class CharacterController2D : MonoBehaviour
 				m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce / 1.2f));
 				animator.SetBool("IsDoubleJumping", true);
 			}
+			// Triple Jump
+			else if (!m_Grounded && jump && canTripleJump && !isWallSliding)
+			{
+				canTripleJump = false;
+				m_Rigidbody2D.linearVelocity = new Vector2(m_Rigidbody2D.linearVelocity.x, 0);
+				m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce / 1.2f));
+				animator.SetBool("IsDoubleJumping", true);
+
+			}
+
 
 			else if (m_IsWall && !m_Grounded)
 			{
@@ -381,5 +409,17 @@ public class CharacterController2D : MonoBehaviour
 		GetComponent<Attack>().enabled = false;
 		m_Rigidbody2D.linearVelocity = new Vector2(0, m_Rigidbody2D.linearVelocity.y);
 		animator.SetBool("isBlocked", true);
+	}
+
+	public void raiseLife(){
+		if (life >= maxHearts){
+			life += 1f;
+		}
+	}
+
+	// Cooldown for the Triple Jump
+	private IEnumerator TripleJumpCooldown(){
+    	yield return new WaitForSeconds(3f);
+    	canTripleJump = false;
 	}
 }

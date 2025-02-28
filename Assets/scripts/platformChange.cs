@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class plataformaCambia : MonoBehaviour
 {
-    public float tiempoMaximo = 4.0f;
-    private float tiempoCambio;
+    public float maxTime = 4.0f;
+    private float timeChange;
     private Color color;
-    public bool esBlanco;
+    public bool isWhite;
 
 
     private AudioSource audioSource;
@@ -19,22 +19,22 @@ public class plataformaCambia : MonoBehaviour
     void Start()
     {
         cambioColor(false);
-        tiempoCambio = tiempoMaximo;
+        timeChange = maxTime;
     }
 
     // Update is called once per frame
     void Update()
     {
-        tiempoCambio = tiempoCambio - Time.deltaTime;
+        timeChange = timeChange - Time.deltaTime;
         // Debug.Log("deltaTime: " + Time.deltaTime);
 
-        if (tiempoCambio <= 0) {
+        if (timeChange <= 0) {
             // Debug.Log("Dentro: " + tiempoCambio);
 
-            esBlanco = !esBlanco;
+            isWhite = !isWhite;
             cambioColor(true);
 
-            tiempoCambio = tiempoMaximo;
+            timeChange = maxTime;
         }
     }
 
@@ -46,7 +46,7 @@ public class plataformaCambia : MonoBehaviour
             audioSource.Play();
         }
 
-        if (esBlanco) {
+        if (isWhite) {
                 gameObject.GetComponent<Renderer>().material.color = new Color(255, 255, 255, 0.3f);
                 gameObject.GetComponent<BoxCollider2D>().enabled = false;
             } 
